@@ -72,13 +72,13 @@ sub mailread{
 sub live{
     my $t = shift;
     my $ml = Monitoring::Livestatus->new(socket => $h->{socket});
-    $ml->errors_are_fatal(0);
+    #$ml->errors_are_fatal(0);
     my $r = $ml->selectrow_hashref("GET $h->{$t}->{get}\n".
                                    "Columns: $h->{$t}->{cols}\n".
                                    "Filter: $h->{$t}->{filter}\n");
-    if($Monitoring::Livestatus::ErrorCode) {
-        croak($Monitoring::Livestatus::ErrorMessage);
-    };
+                               #if($Monitoring::Livestatus::ErrorCode) {
+                               #    croak($Monitoring::Livestatus::ErrorMessage);
+                               #};
     return ($r);
 };
 
