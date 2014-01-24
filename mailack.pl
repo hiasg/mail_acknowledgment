@@ -28,7 +28,7 @@ my $mail = {
 
 # Livestatus Parameter
 my $h = {
-    socket => "/omd/sites/sd/tmp/run/live",
+    socket => "$ENV{'OMD_ROOT'}/tmp/run/live",
     host => {
         get => "hosts",
         cols => "name alias state acknowledged comments_with_extra_info",
@@ -50,11 +50,12 @@ my $h = {
 sub mailread{
     # Entfernern von Steuerzeichen bei OWA
     $_ =~ s/=..=//g;
-    if ($_ =~ /^From\s+(.*\@.*\.\w+)\ .*$/ ) {$mail->{from}=lc($1)};
-    if ($_ =~ /^\W+(\w+)-ALERT.*$/) {$mail->{type}=lc($1)};
-    if ($_ =~ /^\W+Hostname:\s+(\w+).*$/) {$mail->{host}=$1};
-    if ($_ =~ /^\W+Service:\s+(.*)$/) {$mail->{service}=$1};
-    if ($_ =~ /^\W+State:\s+(\w+).*$/) {
+    given ($_) {
+    when ($_ =~ /^From\s+(.*\@.*\.\w+)\ .*$/ ) {$mail->{from}=lc($1)};
+    when ($_ =~ /^\W+(\w+)-ALERT.*$/) {$mail->{type}=lc($1)};
+    when ($_ =~ /^\W+Hostname:\s+(\w+).*$/) {$mail->{host}=$1};
+    when ($_ =~ /^\W+Service:\s+(.*)$/) {$mail->{service}=$1};
+    when ($_ =~ /^\W+State:\s+(\w+).*$/) {
         given ($1) {
 	when ('OK') {$mail->{state}='0'}
 	when ('WARNING') {$mail->{state}='1'}
@@ -65,7 +66,8 @@ sub mailread{
 	default {$mail->{state}='4'}
 	}
     };
-    if ($_ =~ /^\s*\back\w*\b\s+(.*)$/i) {$mail->{message}=$1};
+    when ($_ =~ /^\s*\back\w*\b\s+(.*)$/i) {$mail->{message}=$1};
+    };
 };
 
 # Livestatus abfrage
