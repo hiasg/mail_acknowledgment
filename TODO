@@ -1,0 +1,18 @@
+1.) procmail installieren (falls noch nicht geschehen)
+2.) MTA für external commands konfigurieren 
+    Bei Postfix schaut das wie folgt aus :
+    ----
+    mailbox_command = /usr/bin/procmail -a "$DOMAIN"
+    ----
+3.) .procmailrc im $HOME der betreffenden OMD-Site einrichten
+    ----
+    LOGFILE=/omd/sites/sd/procmail.log
+    VERBOSE=no
+
+    :0c
+    | /omd/sites/sd/local/bin/mailack.pl
+    ----
+    LOGFILE mit VERBOSE=yes hilft beim debugging
+    :0c schickt eine CC Mail an die darunter definierte pipe
+4.) Mails per replay mit folgendem Format in der ersten Zeile schicken :
+    ack <frei text bis zum Zeilenende>
